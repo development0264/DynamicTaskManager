@@ -1,0 +1,44 @@
+{
+  "posts": [
+    {
+      "title": "Test1",
+      "body": "Testing1",
+      "date": "01-12-2023",
+      "id": 1
+    },
+    {
+      "title": "Test2",
+      "body": "Testing2",
+      "date": "22-12-2023",
+      "id": 2
+    },
+    {
+      "title": "Test3",
+      "body": "Testing3",
+      "date": "03-12-2023",
+      "id": 3
+    },
+    {
+      "title": "Test4",
+      "body": "Testing4",
+      "date": "04-12-2023",
+      "id": 4
+    },
+    {
+      "title": "Test5",
+      "body": "Testing5",
+      "date": "05-12-2023",
+      "id": 5
+    }
+  ],
+  "comments": [
+    {
+      "id": 1,
+      "body": "some comment",
+      "postId": 1
+    }
+  ],
+  "profile": {
+    "name": "typicode"
+  }
+}
