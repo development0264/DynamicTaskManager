@@ -1,10 +1,16 @@
 // PostForm.js
 import React, { useState } from "react";
-import { Button, TextField } from "@mui/material";
+import { Box, Button, FormHelperText, TextField, TextareaAutosize } from "@mui/material";
 import * as yup from "yup";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+
+
 
 const PostForm = ({ post, handleInputChange, onSubmit, buttonText, onCancel }) => {
     const [errors, setErrors] = useState({});
+
+    console.log("Error", errors);
 
     // set Validation for Form
     const validateForm = async () => {
@@ -60,26 +66,40 @@ const PostForm = ({ post, handleInputChange, onSubmit, buttonText, onCancel }) =
                 error={!!errors.title}
                 helperText={errors.title}
             />
-            <TextField
+            <TextareaAutosize
                 label="Body"
                 fullWidth
+                minRows={3}
+                maxRows={10}
                 margin="normal"
+                placeholder="Enter Body"
                 value={post.body}
                 onChange={(e) => handleInputChange("body", e.target.value)}
-                error={!!errors.body}
-                helperText={errors.body}
+
+            // error={!!errors.body}
+            // helperText={errors.body}
             />
-            <TextField
-                label="Date"
-                fullWidth
+            <FormHelperText style={{ color: "red" }}>
+                {errors.body}
+            </FormHelperText>
+
+            <DatePicker
+                selected={post.date ? new Date(post.date) : null}
+                onChange={(date) => handleInputChange("date", date)}
                 margin="normal"
-                value={post.date}
-                onChange={(e) => handleInputChange("date", e.target.value)}
-                error={!!errors.date}
-                helperText={errors.date}
+                dateFormat="yyyy-MM-dd"
+                placeholderText="Select Date"
+                className="form-control"
+            // error={!!errors.date}
+            // helperText={errors.date}
             />
-            <Button onClick={handleSubmit}>{buttonText}</Button>
-            <Button onClick={onCancel}>Cancel</Button>
+            <FormHelperText style={{ color: "red" }}>
+                {errors.date}
+            </FormHelperText>
+            <Box display="flex" justifyContent="flex-center" mt={2} mb={2} gap={2}>
+                <Button style={{ backgroundColor: "green", color: "white" }} onClick={handleSubmit}>{buttonText}</Button>
+                <Button style={{ backgroundColor: "red", color: "white" }} onClick={onCancel}>Cancel</Button>
+            </Box>
         </>
     );
 };

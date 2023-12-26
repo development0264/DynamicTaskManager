@@ -1,4 +1,5 @@
 import * as React from 'react';
+import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -9,8 +10,7 @@ import TableRow from '@mui/material/TableRow';
 import TableSortLabel from '@mui/material/TableSortLabel';
 import Paper from '@mui/material/Paper';
 import { visuallyHidden } from '@mui/utils';
-import { Button } from '@mui/material';
-import { useState } from 'react';
+import { Button, Typography } from '@mui/material';
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -51,19 +51,19 @@ const headCells = [
         id: 'title',
         numeric: true,
         disablePadding: false,
-        label: 'Title',
+        label: 'Task title',
     },
     {
         id: 'body',
         numeric: true,
         disablePadding: false,
-        label: 'Body',
+        label: 'Task description',
     },
     {
         id: 'date',
         numeric: true,
         disablePadding: false,
-        label: 'Date',
+        label: 'Due date',
     },
     {
         id: 'status',
@@ -83,10 +83,7 @@ function EnhancedTableHead(props) {
     const { order, orderBy, onRequestSort } =
         props;
     const createSortHandler = (property) => (event) => {
-        // onRequestSort(event, property);
-        if (property === 'date') {
-            onRequestSort(event, property);
-        }
+        onRequestSort(event, property);
     };
 
     return (
@@ -95,9 +92,11 @@ function EnhancedTableHead(props) {
                 {headCells.map((headCell) => (
                     <TableCell
                         key={headCell.id}
-                        align={headCell.numeric ? 'right' : 'left'}
+                        // align={headCell.numeric ? 'left' : 'left'}
+                        align={headCell.label === 'Actions' ? 'center' : headCell.numeric ? 'left' : 'left'}
                         padding={headCell.disablePadding ? 'none' : 'normal'}
                         sortDirection={orderBy === headCell.id ? order : false}
+                        style={{ fontWeight: 'bold' }}
                     >
                         <TableSortLabel
                             active={orderBy === headCell.id}
@@ -119,12 +118,12 @@ function EnhancedTableHead(props) {
 }
 
 export default function PostTable({ posts, handleEdit, handleDelete, handleToggle }) {
-    const [order, setOrder] = useState('asc');
-    const [orderBy, setOrderBy] = useState('calories');
-    const [selected, setSelected] = useState([]);
-    const [page, setPage] = useState(0);
-    const [dense, setDense] = useState(false);
-    const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [order, setOrder] = React.useState('asc');
+    const [orderBy, setOrderBy] = React.useState('calories');
+    const [selected, setSelected] = React.useState([]);
+    const [page, setPage] = React.useState(0);
+    const [dense, setDense] = React.useState(false);
+    const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -140,6 +139,8 @@ export default function PostTable({ posts, handleEdit, handleDelete, handleToggl
         }
         setSelected([]);
     };
+
+    const isSelected = (id) => selected.indexOf(id) !== -1;
 
     const emptyRows =
         page > 0 ? Math.max(0, (1 + page) * rowsPerPage - posts.length) : 0;
@@ -174,7 +175,7 @@ export default function PostTable({ posts, handleEdit, handleDelete, handleToggl
                             {visibleRows.map((posts, index) => {
                                 return (
                                     <TableRow>
-                                        <TableCell align="right"
+                                        <TableCell align="left"
                                             component="th"
                                             id={posts.id}
                                             scope="posts"
@@ -182,17 +183,17 @@ export default function PostTable({ posts, handleEdit, handleDelete, handleToggl
                                         >
                                             {posts.id}
                                         </TableCell>
-                                        <TableCell align="right">{posts.title}</TableCell>
-                                        <TableCell align="right">{posts.body}</TableCell>
-                                        <TableCell align="right">{posts.date}</TableCell>
-                                        <TableCell align="right">
-                                            <Button onClick={() => handleToggle(posts.id)}>
+                                        <TableCell align="left">{posts.title}</TableCell>
+                                        <TableCell align="left">{posts.body}</TableCell>
+                                        <TableCell align="left">{posts.date}</TableCell>
+                                        <TableCell align="left">
+                                            <Button style={{ backgroundColor: posts.completed ? "red" : "green", color: "white", margin: "2px 2px 2px 2px" }} onClick={() => handleToggle(posts.id)}>
                                                 {posts.completed ? 'Incomplete' : 'Completed'}
                                             </Button>
                                         </TableCell>
-                                        <TableCell align="right">
-                                            <Button onClick={() => handleEdit(posts.id)}>Edit</Button>
-                                            <Button onClick={() => handleDelete(posts.id)}>Delete</Button>
+                                        <TableCell align="center">
+                                            <Button style={{ backgroundColor: "green", color: "white", margin: "2px 2px 2px 2px" }} onClick={() => handleEdit(posts.id)}>Edit</Button>
+                                            <Button style={{ backgroundColor: "red", color: "white", margin: "2px 2px 2px 2px" }} onClick={() => handleDelete(posts.id)}>Delete</Button>
                                         </TableCell>
                                     </TableRow>
                                 );

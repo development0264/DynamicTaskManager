@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Box, Button, Modal, Typography } from "@mui/material";
 import PostTable from "./postTable";
 import PostForm from "./postForm";
+import AddIcon from '@mui/icons-material/Add';
 
 const Home = () => {
     const [posts, setPosts] = useState([]);
@@ -11,6 +12,8 @@ const Home = () => {
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
     const [postToDelete, setPostToDelete] = useState(null);
+    const [toggleConfirmationOpen, setToggleConfirmationOpen] = useState(false);
+    const [postToToggle, setPostToToggle] = useState(null);
 
     // Take Data from LocalStorage to list posts List
 
@@ -63,9 +66,9 @@ const Home = () => {
     };
 
     const handleInputChange = (field, value) => {
-        setSelectedPostCreate((prev) => ({
-            ...prev,
-            [field]: value,
+        setSelectedPostCreate((prevPost) => ({
+            ...prevPost,
+            [field]: field === "date" ? value.toISOString().slice(0, 10) : value,
         }));
     };
 
@@ -97,24 +100,36 @@ const Home = () => {
 
     // For Toggle Task Completed and Incomplete
 
-    const handleToggleCompletion = (postId) => {
+    const handleToggle = (postId) => {
+        setPostToToggle(postId);
+        setToggleConfirmationOpen(true);
+    };
+
+    const handleCancelToggle = () => {
+        setPostToToggle(null);
+        setToggleConfirmationOpen(false);
+    };
+
+    const handleToggleCompletion = () => {
         const updatedPosts = posts.map((post) =>
-            post.id === postId ? { ...post, completed: !post.completed } : post
+            post.id === postToToggle ? { ...post, completed: !post.completed } : post
         );
         setPosts([...updatedPosts]);
         saveDataToLocalStorage(updatedPosts);
+        setToggleConfirmationOpen(false);
     };
-
 
     return (
         <Box>
-            <Button style={{ marginLeft: "1200px", textDecoration: "none" }} onClick={handleCreate}>
-                Add Post
+            <Typography variant="h4" gutterBottom sx={{ textAlign: 'left', marginTop: 2 }}>
+                Task List
+            </Typography>
+            <Button style={{ margin: "10px 0px 10px auto", display: "block", backgroundColor: "green", color: "white" }} onClick={handleCreate}>
+                <AddIcon style={{ marginBottom: "-6px" }} />Add Task
             </Button>
-
             {/* Post Table Component passing props to it */}
             <PostTable posts={posts} handleEdit={handleEdit}
-                handleDelete={handleDelete} handleToggle={handleToggleCompletion}
+                handleDelete={handleDelete} handleToggle={handleToggle}
             // orderBy={orderBy} order={order} onSort={handleRequestSort}
             />
 
@@ -133,8 +148,32 @@ const Home = () => {
                     }}
                 >
                     <Typography>Are you sure you want to delete this post?</Typography>
-                    <Button onClick={handleConfirmDelete}>Yes</Button>
-                    <Button onClick={handleCancelDelete}>No</Button>
+                    <Box display="flex" justifyContent="flex-end" gap={1} marginTop={5}>
+                        <Button style={{ backgroundColor: "green", color: "black", margin: "2px 2px 2px 2px" }} onClick={handleConfirmDelete}>Yes</Button>
+                        <Button style={{ backgroundColor: "red", color: "black" }} onClick={handleCancelDelete}>No</Button>
+                    </Box>
+                </Box>
+            </Modal>
+
+            {/* Delete Confirmation Modal for Delete */}
+            <Modal open={toggleConfirmationOpen} onClose={handleCancelToggle}>
+                <Box
+                    sx={{
+                        position: "absolute",
+                        top: "50%",
+                        left: "50%",
+                        transform: "translate(-50%, -50%)",
+                        width: 400,
+                        bgcolor: "background.paper",
+                        boxShadow: 24,
+                        p: 4,
+                    }}
+                >
+                    <Typography>Are you sure you want to change the status of task?</Typography>
+                    <Box display="flex" justifyContent="flex-end" gap={1} marginTop={5}>
+                        <Button style={{ backgroundColor: "green", color: "black", margin: "2px 2px 2px 2px" }} onClick={handleToggleCompletion}>Yes</Button>
+                        <Button style={{ backgroundColor: "red", color: "black" }} onClick={handleCancelToggle}>No</Button>
+                    </Box>
                 </Box>
             </Modal>
 
