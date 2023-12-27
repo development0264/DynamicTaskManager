@@ -1,11 +1,10 @@
 // PostForm.js
 import React, { useState } from "react";
-import { Box, Button, FormHelperText, TextField, TextareaAutosize } from "@mui/material";
+import { Box, Button, FormHelperText, TextField, TextareaAutosize, Typography } from "@mui/material";
 import * as yup from "yup";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-
-
+import './style.css';
 
 const PostForm = ({ post, handleInputChange, onSubmit, buttonText, onCancel }) => {
     const [errors, setErrors] = useState({});
@@ -16,8 +15,16 @@ const PostForm = ({ post, handleInputChange, onSubmit, buttonText, onCancel }) =
     const validateForm = async () => {
 
         const schema = yup.object().shape({
-            title: yup.string().required("Title is required"),
-            body: yup.string().required("Body is required"),
+            title: yup.string()
+                .required("Title is required")
+                .trim('This field can not contain whitepaces')
+                .strict(true),
+            // .matches(/^\S+$/, "This field can not contain whitepaces"),
+            body: yup.string()
+                .required("Body is required")
+                .trim('This field can not contain whitepaces')
+                .strict(true),
+            // .matches(/^\S+$/, "This field can not contain whitepaces"),
             date: yup.date()
                 .required("Date is required")
                 .typeError("Invalid date")
@@ -57,25 +64,40 @@ const PostForm = ({ post, handleInputChange, onSubmit, buttonText, onCancel }) =
 
     return (
         <>
+            <Typography variant="subtitle1"><span>
+                Task Title<span style={{ color: 'red' }}>*</span>
+            </span></Typography>
             <TextField
-                label="Title"
                 fullWidth
                 margin="normal"
                 value={post.title}
                 onChange={(e) => handleInputChange("title", e.target.value)}
-                error={!!errors.title}
-                helperText={errors.title}
+                className="inputTitle"
+            // error={!!errors.title}
+            // helperText={errors.title}
             />
+            <FormHelperText style={{ color: "red" }}>
+                {errors.title}
+            </FormHelperText>
+            <Typography variant="subtitle1">
+                <span>
+                    Task Description<span style={{ color: 'red' }}>*</span>
+                </span>
+            </Typography>
             <TextareaAutosize
-                label="Body"
                 fullWidth
                 minRows={3}
                 maxRows={10}
                 margin="normal"
-                placeholder="Enter Body"
                 value={post.body}
                 onChange={(e) => handleInputChange("body", e.target.value)}
-
+                style={{
+                    width: '100%',
+                    padding: '10px',
+                    fontSize: '16px',
+                    border: '1px solid #ccc',
+                    borderRadius: '5px',
+                }}
             // error={!!errors.body}
             // helperText={errors.body}
             />
@@ -83,20 +105,27 @@ const PostForm = ({ post, handleInputChange, onSubmit, buttonText, onCancel }) =
                 {errors.body}
             </FormHelperText>
 
+            <Typography variant="subtitle1">
+                <span>
+                    Due Date<span style={{ color: 'red' }}>*</span>
+                </span></Typography>
             <DatePicker
                 selected={post.date ? new Date(post.date) : null}
                 onChange={(date) => handleInputChange("date", date)}
+                // value={post.date ? new Date(post.date).toISOString().slice(0, 10) : ""}
                 margin="normal"
                 dateFormat="yyyy-MM-dd"
-                placeholderText="Select Date"
+                placeholderText="Select Due Date"
                 className="form-control"
+                isClearable
+                wrapperClassName="datePickerClass"
             // error={!!errors.date}
             // helperText={errors.date}
             />
             <FormHelperText style={{ color: "red" }}>
                 {errors.date}
             </FormHelperText>
-            <Box display="flex" justifyContent="flex-center" mt={2} mb={2} gap={2}>
+            <Box display="flex" justifyContent="flex-end" mt={2} mb={2} gap={2}>
                 <Button style={{ backgroundColor: "green", color: "white" }} onClick={handleSubmit}>{buttonText}</Button>
                 <Button style={{ backgroundColor: "red", color: "white" }} onClick={onCancel}>Cancel</Button>
             </Box>

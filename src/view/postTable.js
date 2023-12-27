@@ -51,19 +51,19 @@ const headCells = [
         id: 'title',
         numeric: true,
         disablePadding: false,
-        label: 'Task title',
+        label: 'Task Title',
     },
     {
         id: 'body',
         numeric: true,
         disablePadding: false,
-        label: 'Task description',
+        label: 'Task Description',
     },
     {
         id: 'date',
         numeric: true,
         disablePadding: false,
-        label: 'Due date',
+        label: 'Due Date',
     },
     {
         id: 'status',
@@ -83,7 +83,10 @@ function EnhancedTableHead(props) {
     const { order, orderBy, onRequestSort } =
         props;
     const createSortHandler = (property) => (event) => {
-        onRequestSort(event, property);
+        // onRequestSort(event, property);
+        if (property === 'date') {
+            onRequestSort(event, property);
+        }
     };
 
     return (
@@ -98,18 +101,26 @@ function EnhancedTableHead(props) {
                         sortDirection={orderBy === headCell.id ? order : false}
                         style={{ fontWeight: 'bold' }}
                     >
-                        <TableSortLabel
-                            active={orderBy === headCell.id}
-                            direction={orderBy === headCell.id ? order : 'asc'}
-                            onClick={createSortHandler(headCell.id)}
-                        >
-                            {headCell.label}
-                            {orderBy === headCell.id ? (
-                                <Box component="span" sx={visuallyHidden}>
-                                    {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                                </Box>
-                            ) : null}
-                        </TableSortLabel>
+                        {/* give condition for only sorting on due date */}
+                        {headCell.label === 'Due Date' ? (
+                            // sorting on all fiels
+                            <TableSortLabel
+                                active={orderBy === headCell.id}
+                                direction={orderBy === headCell.id ? order : 'asc'}
+                                onClick={createSortHandler(headCell.id)}
+                            >
+                                {headCell.label}
+                                {orderBy === headCell.id ? (
+                                    <Box component="span" sx={visuallyHidden}>
+                                        {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                                    </Box>
+                                ) : null}
+                            </TableSortLabel>
+                            // sorting on all fiels
+                        ) : (
+                            headCell.label
+                        )}
+                        {/* give condition for only sorting on due date */}
                     </TableCell>
                 ))}
             </TableRow>
