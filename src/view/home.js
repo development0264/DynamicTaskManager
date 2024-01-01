@@ -1,19 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { Box, Button, Modal, Typography } from "@mui/material";
-import PostTable from "./postTable";
-import PostForm from "./postForm";
+import PostTable from "../components/homePage/postTable";
+import PostForm from "../components/homePage/postForm";
 import AddIcon from '@mui/icons-material/Add';
+import ConfirmationModal from "../components/Mui/Model/confirmationModel";
+import PostModal from "../components/Mui/Model/postModel";
 
 const Home = () => {
     const [posts, setPosts] = useState([]);
     const [selectedPostEdit, setSelectedPostEdit] = useState(null);
     const [selectedPostCreate, setSelectedPostCreate] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
     const [postToDelete, setPostToDelete] = useState(null);
     const [toggleConfirmationOpen, setToggleConfirmationOpen] = useState(false);
     const [postToToggle, setPostToToggle] = useState(null);
+    const [modalType, setModalType] = useState('create');
 
     // Take Data from LocalStorage to list posts List
 
@@ -27,7 +29,8 @@ const Home = () => {
             date: "",
             completed: false,
         });
-        setIsCreateModalOpen(true);
+        setModalType('create');
+        setIsModalOpen(true);
     };
 
     // For Create New Posts
@@ -35,16 +38,9 @@ const Home = () => {
         if (!selectedPostCreate.title || !selectedPostCreate.body) {
             return;
         }
-        // const formattedPost = {
-        //     ...selectedPostCreate,
-        //     date: selectedPostCreate.date ? selectedPostCreate.date.toISOString().slice(0, 10) : null,
-        // };
-        // setPosts([...posts, formattedPost]);
-        // saveDataToLocalStorage([...posts, formattedPost]);
-        // setIsCreateModalOpen(false);
         setPosts([...posts, selectedPostCreate]);
         saveDataToLocalStorage([...posts, selectedPostCreate]);
-        setIsCreateModalOpen(false);
+        setIsModalOpen(false);
     }
 
     useEffect(() => {
@@ -58,6 +54,7 @@ const Home = () => {
     const handleEdit = (postId) => {
         const selectedPostEdit = posts.find((post) => post.id === postId);
         setSelectedPostEdit(selectedPostEdit);
+        setModalType('edit');
         setIsModalOpen(true);
     };
 
@@ -75,15 +72,11 @@ const Home = () => {
         setPosts([...formattedUpdatedPosts]);
         saveDataToLocalStorage([...formattedUpdatedPosts]);
         setIsModalOpen(false);
-        // setPosts([...updatedPosts]);
-        // saveDataToLocalStorage([...updatedPosts]);
-        // setIsModalOpen(false);
     };
 
     const handleInputChange = (field, value) => {
         setSelectedPostCreate((prevPost) => ({
             ...prevPost,
-            // [field]: field === "date" ? value.toISOString().slice(0, 10) : value,
             [field]: field === "date" ? (value ? value.toISOString().slice(0, 10) : null) : value,
         }));
     };
@@ -135,119 +128,47 @@ const Home = () => {
         setToggleConfirmationOpen(false);
     };
 
+    const handleModalSubmit = () => {
+        if (modalType === 'create') {
+            handleCreateSubmit();
+        } else if (modalType === 'edit') {
+            handleEditSubmit();
+        }
+        setIsModalOpen(false);
+    };
+
     return (
         <Box>
             <Typography variant="h4" gutterBottom sx={{ textAlign: 'left', marginTop: 2 }}>
                 Task List
             </Typography>
+
             <Button style={{ margin: "10px 0px 10px auto", display: "block", backgroundColor: "#0277bd", color: "white" }} onClick={handleCreate}>
                 <AddIcon style={{ marginBottom: "-6px" }} />Add Task
             </Button>
+
             {/* Post Table Component passing props to it */}
             <PostTable posts={posts} handleEdit={handleEdit}
                 handleDelete={handleDelete} handleToggle={handleToggle}
-            // orderBy={orderBy} order={order} onSort={handleRequestSort}
             />
 
             {/* Delete Confirmation Modal for Delete */}
-            <Modal open={deleteConfirmationOpen} onClose={handleCancelDelete}>
-                <Box
-                    sx={{
-                        position: "absolute",
-                        top: "50%",
-                        left: "50%",
-                        transform: "translate(-50%, -50%)",
-                        width: 400,
-                        bgcolor: "background.paper",
-                        boxShadow: 24,
-                        p: 4,
-                    }}
-                >
-                    <Typography>Are you sure you want to delete this post?</Typography>
-                    <Box display="flex" justifyContent="flex-end" gap={1} marginTop={5}>
-                        <Button style={{ backgroundColor: "green", color: "white", margin: "2px 2px 2px 2px" }} onClick={handleConfirmDelete}>Yes</Button>
-                        <Button style={{ backgroundColor: "red", color: "white", margin: "2px 2px 2px 2px" }} onClick={handleCancelDelete}>No</Button>
-                    </Box>
-                </Box>
-            </Modal>
+            <ConfirmationModal open={deleteConfirmationOpen} onCancel={handleCancelDelete}
+                onConfirm={handleConfirmDelete} message="Are you sure you want to edit this post?" />
 
-            {/* Delete Confirmation Modal for Delete */}
-            <Modal open={toggleConfirmationOpen} onClose={handleCancelToggle}>
-                <Box
-                    sx={{
-                        position: "absolute",
-                        top: "50%",
-                        left: "50%",
-                        transform: "translate(-50%, -50%)",
-                        width: 400,
-                        bgcolor: "background.paper",
-                        boxShadow: 24,
-                        p: 4,
-                    }}
-                >
-                    <Typography>Are you sure you want to change the status of task?</Typography>
-                    <Box display="flex" justifyContent="flex-end" gap={1} marginTop={5}>
-                        <Button style={{ backgroundColor: "green", color: "white", margin: "2px 2px 2px 2px" }} onClick={handleToggleCompletion}>Yes</Button>
-                        <Button style={{ backgroundColor: "red", color: "white", margin: "2px 2px 2px 2px" }} onClick={handleCancelToggle}>No</Button>
-                    </Box>
-                </Box>
-            </Modal>
+            {/* Task Status Confirmation Modal for Delete */}
+            <ConfirmationModal open={toggleConfirmationOpen} onCancel={handleCancelToggle}
+                onConfirm={handleToggleCompletion} message="Are you sure you want to change the status of task?" />
 
-            {/* For Create Modal */}
-            <Modal open={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)}>
-                <Box
-                    sx={{
-                        position: "absolute",
-                        top: "50%",
-                        left: "50%",
-                        transform: "translate(-50%, -50%)",
-                        width: 400,
-                        bgcolor: "background.paper",
-                        boxShadow: 24,
-                        p: 4,
-                    }}
-                >
-                    <Typography variant="h4" gutterBottom sx={{ textAlign: 'center', fontSize: 20 }}>
-                        Add Task
-                    </Typography>
-                    {/* PostForm Component passing props to it */}
-                    <PostForm
-                        post={selectedPostCreate}
-                        onSubmit={handleCreateSubmit}
-                        handleInputChange={handleInputChange}
-                        onCancel={() => setIsCreateModalOpen(false)}
-                        handleToggle={handleToggleCompletion}
-                        buttonText={"Create"} />
-                </Box>
-            </Modal>
-
-            {/* For Edit Modal */}
-            <Modal open={isModalOpen} onClose={() => setIsModalOpen(false)}>
-                <Box
-                    sx={{
-                        position: "absolute",
-                        top: "50%",
-                        left: "50%",
-                        transform: "translate(-50%, -50%)",
-                        width: 400,
-                        bgcolor: "background.paper",
-                        boxShadow: 24,
-                        p: 4,
-                    }}
-                >
-                    <Typography variant="h4" gutterBottom sx={{ textAlign: 'center', marginTop: 2, fontSize: 20 }}>
-                        Edit Task
-                    </Typography>
-                    {/* PostForm Component passing props to it */}
-                    <PostForm
-                        post={selectedPostEdit}
-                        onSubmit={handleEditSubmit}
-                        handleInputChange={handleEditInputChange}
-                        onCancel={() => setIsModalOpen(false)}
-                        handleToggle={handleToggleCompletion}
-                        buttonText={"Update"} />
-                </Box>
-            </Modal>
+            {/* component for Create & Edit Modal */}
+            <PostModal
+                open={isModalOpen}
+                onCancel={() => setIsModalOpen(false)}
+                onSubmit={handleModalSubmit}
+                post={modalType === 'edit' ? selectedPostEdit : selectedPostCreate}
+                handleInputChange={modalType === 'create' ? handleInputChange : handleEditInputChange}
+                buttonText={modalType === 'create' ? 'Create' : 'Update'}
+            />
         </Box>
     );
 };

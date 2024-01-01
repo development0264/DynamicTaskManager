@@ -1,5 +1,5 @@
 import { Divider, IconButton, List, Toolbar } from "@mui/material";
-import { mainListItems, secondaryListItems } from "../view/dashboard/listItems";
+import { mainListItems } from "./listItems";
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { Drawer } from "../components/Mui/StyledComponent";
 
@@ -24,7 +24,6 @@ const Sidebar = ({ open, toggleDrawer }) => {
                 <List component="nav">
                     {mainListItems}
                     <Divider sx={{ my: 1 }} />
-                    {/* {secondaryListItems} */}
                 </List>
             </Drawer>
         </div>

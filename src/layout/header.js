@@ -1,19 +1,15 @@
-import { Badge, Button, IconButton, Toolbar, Typography } from "@mui/material";
-import NotificationsIcon from '@mui/icons-material/Notifications';
+import { IconButton, Toolbar, Typography } from "@mui/material";
 import MenuIcon from '@mui/icons-material/Menu';
 import { AppBar } from "../components/Mui/StyledComponent";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const Header = ({ open, toggleDrawer }) => {
-
-    const navigate = useNavigate();
-
     return (
         <div>
             <AppBar position="absolute" open={open}>
                 <Toolbar
                     sx={{
-                        pr: '24px', // keep right padding when drawer closed
+                        pr: '24px',
                     }}
                 >
                     <IconButton

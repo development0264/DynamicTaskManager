@@ -1,16 +1,14 @@
 // PostForm.js
 import React, { useState } from "react";
-import { Box, Button, FormHelperText, TextField, TextareaAutosize, Typography } from "@mui/material";
+import { Box, Button, FormHelperText, TextareaAutosize, Typography } from "@mui/material";
 import * as yup from "yup";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import './style.css';
+import TextFieldComponent from "../Mui/textField/textField";
 
 const PostForm = ({ post, handleInputChange, onSubmit, buttonText, onCancel }) => {
     const [errors, setErrors] = useState({});
-
-    console.log("Error", errors);
-
     // set Validation for Form
     const validateForm = async () => {
 
@@ -19,12 +17,10 @@ const PostForm = ({ post, handleInputChange, onSubmit, buttonText, onCancel }) =
                 .required("Title is required")
                 .trim('This field can not contain whitepaces')
                 .strict(true),
-            // .matches(/^\S+$/, "This field can not contain whitepaces"),
             body: yup.string()
                 .required("Body is required")
                 .trim('This field can not contain whitepaces')
                 .strict(true),
-            // .matches(/^\S+$/, "This field can not contain whitepaces"),
             date: yup.date()
                 .required("Date is required")
                 .typeError("Invalid date")
@@ -67,15 +63,8 @@ const PostForm = ({ post, handleInputChange, onSubmit, buttonText, onCancel }) =
             <Typography variant="subtitle1"><span>
                 Task Title<span style={{ color: 'red' }}>*</span>
             </span></Typography>
-            <TextField
-                fullWidth
-                margin="normal"
-                value={post.title}
-                onChange={(e) => handleInputChange("title", e.target.value)}
-                className="inputTitle"
-            // error={!!errors.title}
-            // helperText={errors.title}
-            />
+            <TextFieldComponent fullWidth className="inputTitle"
+                value={post.title} onChange={(e) => handleInputChange("title", e.target.value)} />
             <FormHelperText style={{ color: "red" }}>
                 {errors.title}
             </FormHelperText>
@@ -98,8 +87,6 @@ const PostForm = ({ post, handleInputChange, onSubmit, buttonText, onCancel }) =
                     border: '1px solid #ccc',
                     borderRadius: '5px',
                 }}
-            // error={!!errors.body}
-            // helperText={errors.body}
             />
             <FormHelperText style={{ color: "red" }}>
                 {errors.body}
@@ -119,8 +106,6 @@ const PostForm = ({ post, handleInputChange, onSubmit, buttonText, onCancel }) =
                 className="form-control"
                 isClearable
                 wrapperClassName="datePickerClass"
-            // error={!!errors.date}
-            // helperText={errors.date}
             />
             <FormHelperText style={{ color: "red" }}>
                 {errors.date}
